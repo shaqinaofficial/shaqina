@@ -10,7 +10,7 @@ if(isset($_POST['btn_login'])){
     $select->execute();
     $row = $select->fetch(PDO::FETCH_ASSOC);
 
-    if($row['username']==$username AND $row['password']==$password AND $row['role']=="Admin" AND $row['is_active']=="1"){
+    if($row['username']==$username AND $row['password']==$password AND $row['is_active']=="1"){
         $_SESSION['user_id']=$row['user_id'];
         $_SESSION['username']=$row['username'];
         $_SESSION['fullname']=$row['fullname'];
@@ -19,14 +19,7 @@ if(isset($_POST['btn_login'])){
         $message = 'success';
         header('refresh:2;dashboard.php');
 
-    }else if($row['username']==$username AND $row['password']==$password AND $row['role']=="Operator" AND $row['is_active']=="1"){
-        $_SESSION['user_id']=$row['user_id'];
-        $_SESSION['username']=$row['username'];
-        $_SESSION['fullname']=$row['fullname'];
-        $_SESSION['role']=$row['role'];
-        $message = 'success';
-        header('refresh:2;dashboard.php');
-    }else {
+    } else {
         $errormsg = 'error';
     }
 }

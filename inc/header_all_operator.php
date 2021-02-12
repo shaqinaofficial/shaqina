@@ -135,7 +135,9 @@
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">Main Menu</li>
         <!-- Optionally, you can add icons to the links -->
+        <?php if($_SESSION['role']=="Operator") { ?>
         <li><a href="dashboard.php"><i class="fa fa-dashboard"></i> <span>Beranda</span></a></li>
+        <?php } ?>
         <li><a href="product.php"><i class="fa fa-archive"></i> <span>Produk</span></a></li>
         <li><a href="order.php"><i class="fa fa-shopping-cart"></i> <span>Transaksi</span></a></li>
       </ul>

@@ -41,7 +41,9 @@
         <div class="box box-success">
             <div class="box-header with-border">
                 <h3 class="box-title">Daftar Produk</h3>
+                <?php if ($_SESSION['role']=="Admin") { ?>
                 <a href="add_product.php" class="btn btn-success btn-sm pull-right">Tambah Produk</a>
+                <?php } ?>
             </div>
             <div class="box-body">
                 <div style="overflow-x:auto;">

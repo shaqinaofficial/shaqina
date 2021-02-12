@@ -1,10 +1,21 @@
 <?php
 include_once 'db/connect_db.php';
-include_once 'inc/header_home.php';
+session_start();
+if ($_SESSION['username'] == "") {
+    header('location:index.php');
+} else {
+    if ($_SESSION['role'] == "Admin") {
+        include_once 'inc/header_all.php';
+    } else {
+        include_once 'inc/header_all_operator.php';
+    }
+}
+
+error_reporting(0);
 
 if (isset($_POST['order_product'])) {
+    $reseller_id = $_SESSION['user_id'];
     $nama = $_POST['nama'];
-    $nomor_hp = $_POST['nomor_hp'];
     $produk = $_POST['produk'];
     $harga = preg_replace('/[^0-9]/', '', $_POST['harga']);
     $provinsi = $_POST['provinsi'];
@@ -15,8 +26,8 @@ if (isset($_POST['order_product'])) {
     $ongkir = preg_replace('/[^0-9]/', '', $_POST['ongkir']);
     $fee = preg_replace('/[^0-9]/', '', $_POST['fee']);
     $total = preg_replace('/[^0-9]/', '', $_POST['total']);
-    $insert = $pdo->prepare("INSERT INTO `tbl_invoice` (`nama`, `nomor_hp`, `produk`, `harga`, `provinsi`, `kota`, `kecamatan`, `alamat`, `metode_pembayaran`, `ongkir`, `fee`, `total`)
-    VALUES ('$nama', '$nomor_hp', '$produk', '$harga', '$provinsi', '$kota', '$kecamatan', '$alamat', '$metode_pembayaran', '$ongkir', '$fee', '$total');");
+    $insert = $pdo->prepare("INSERT INTO `tbl_invoice` (`reseller_id`, `nama`, `produk`, `harga`, `provinsi`, `kota`, `kecamatan`, `alamat`, `metode_pembayaran`, `ongkir`, `fee`, `total`)
+    VALUES ('$reseller_id', '$nama', '$produk', '$harga', '$provinsi', '$kota', '$kecamatan', '$alamat', '$metode_pembayaran', '$ongkir', '$fee', '$total');");
 
     if ($insert->execute()) {
         echo '<script type="text/javascript">
@@ -54,13 +65,13 @@ function fill_product($pdo)
 }
 
 ?>
+<html>
+<head>
+<meta http-equiv="refresh" content="60">
+</head>
+</html>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-    .content-wrapper,
-    .main-footer {
-        margin-left: 0px !important;
-    }
-
     .select2-selection__rendered {
         line-height: 31px !important;
     }
@@ -79,14 +90,6 @@ function fill_product($pdo)
 </style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <h1>
-            Order
-        </h1>
-        <hr>
-    </section>
-
     <!-- Main content -->
     <section class="content container-fluid">
         <div class="box box-success">
@@ -100,12 +103,12 @@ function fill_product($pdo)
                     <div class="col-md-12">
 
                         <div class="form-group">
-                            <label for="nama">Nama</label><br>
-                            <input type="text" id="nama" class="form-control nama" name="nama" required>
+                            <label for="reseller">Reseller</label><br>
+                            <input type="text" id="reseller" class="form-control reseller" value="<?=$_SESSION['fullname']?>" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="nomor_hp">Nomor Handphone</label>
-                            <input type="number" id="nomor_hp" class="form-control nomor_hp" name="nomor_hp" required>
+                            <label for="nama">Nama Pembeli</label><br>
+                            <input type="text" id="nama" class="form-control nama" required>
                         </div>
                         <div class="form-group">
                             <label for="produk">Produk</label>
