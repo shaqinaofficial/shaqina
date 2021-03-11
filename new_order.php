@@ -14,18 +14,162 @@ if ($_SESSION['username'] == "") {
 error_reporting(0);
 
 if (isset($_POST['order_product'])) {
+
+    $list_provinsi = [
+        [
+            "id" => 1,
+            "text" => "Bali"
+        ],
+        [
+            "id" => 2,
+            "text" => "Bangka Belitung"
+        ],
+        [
+            "id" => 3,
+            "text" => "Banten"
+        ],
+        [
+            "id" => 4,
+            "text" => "Bengkulu"
+        ],
+        [
+            "id" => 5,
+            "text" => "DI Yogyakarta"
+        ],
+        [
+            "id" => 6,
+            "text" => "DKI Jakarta"
+        ],
+        [
+            "id" => 7,
+            "text" => "Gorontalo"
+        ],
+        [
+            "id" => 8,
+            "text" => "Jambi"
+        ],
+        [
+            "id" => 9,
+            "text" => "Jawa Barat"
+        ],
+        [
+            "id" => 10,
+            "text" => "Jawa Tengah"
+        ],
+        [
+            "id" => 11,
+            "text" => "Jawa Timur"
+        ],
+        [
+            "id" => 12,
+            "text" => "Kalimantan Barat"
+        ],
+        [
+            "id" => 13,
+            "text" => "Kalimantan Selatan"
+        ],
+        [
+            "id" => 14,
+            "text" => "Kalimantan Tengah"
+        ],
+        [
+            "id" => 15,
+            "text" => "Kalimantan Timur"
+        ],
+        [
+            "id" => 16,
+            "text" => "Kalimantan Utara"
+        ],
+        [
+            "id" => 17,
+            "text" => "Kepulauan Riau"
+        ],
+        [
+            "id" => 18,
+            "text" => "Lampung"
+        ],
+        [
+            "id" => 19,
+            "text" => "Maluku"
+        ],
+        [
+            "id" => 20,
+            "text" => "Maluku Utara"
+        ],
+        [
+            "id" => 21,
+            "text" => "Nanggroe Aceh Darussalam (NAD)"
+        ],
+        [
+            "id" => 22,
+            "text" => "Nusa Tenggara Barat (NTB)"
+        ],
+        [
+            "id" => 23,
+            "text" => "Nusa Tenggara Timur (NTT)"
+        ],
+        [
+            "id" => 24,
+            "text" => "Papua"
+        ],
+        [
+            "id" => 25,
+            "text" => "Papua Barat"
+        ],
+        [
+            "id" => 26,
+            "text" => "Riau"
+        ],
+        [
+            "id" => 27,
+            "text" => "Sulawesi Barat"
+        ],
+        [
+            "id" => 28,
+            "text" => "Sulawesi Selatan"
+        ],
+        [
+            "id" => 29,
+            "text" => "Sulawesi Tengah"
+        ],
+        [
+            "id" => 30,
+            "text" => "Sulawesi Tenggara"
+        ],
+        [
+            "id" => 31,
+            "text" => "Sulawesi Utara"
+        ],
+        [
+            "id" => 32,
+            "text" => "Sumatera Barat"
+        ],
+        [
+            "id" => 33,
+            "text" => "Sumatera Selatan"
+        ],
+        [
+            "id" => 34,
+            "text" => "Sumatera Utara"
+        ]
+    ];
+
+    $list_kota = json_decode(file_get_contents("https://api.orderonline.id/shipping/city?province_id=" . $_POST['provinsi']), true)["data"];
+    $list_kecamatan = json_decode(file_get_contents("https://api.orderonline.id/shipping/district?city_id=" . $_POST['kota']), true)["data"];
+
     $reseller_id = $_SESSION['user_id'];
     $nama = $_POST['nama'];
     $produk = $_POST['produk'];
     $harga = preg_replace('/[^0-9]/', '', $_POST['harga']);
-    $provinsi = $_POST['provinsi'];
-    $kota = $_POST['kota'];
-    $kecamatan = $_POST['kecamatan'];
+    $provinsi = $list_provinsi[array_search($_POST["provinsi"], array_column($list_provinsi, 'id'))]["text"];
+    $kota = $list_kota[array_search($_POST["kota"], array_column($list_kota, 'city_id'))]["city_name_with_type"];
+    $kecamatan = $list_kecamatan[array_search($_POST["kecamatan"], array_column($list_kecamatan, 'subdistrict_id'))]["subdistrict_name"];
     $alamat = $_POST['alamat'];
     $metode_pembayaran = $_POST['metode_pembayaran'];
     $ongkir = preg_replace('/[^0-9]/', '', $_POST['ongkir']);
     $fee = preg_replace('/[^0-9]/', '', $_POST['fee']);
     $total = preg_replace('/[^0-9]/', '', $_POST['total']);
+
     $insert = $pdo->prepare("INSERT INTO `tbl_invoice` (`reseller_id`, `nama`, `produk`, `harga`, `provinsi`, `kota`, `kecamatan`, `alamat`, `metode_pembayaran`, `ongkir`, `fee`, `total`)
     VALUES ('$reseller_id', '$nama', '$produk', '$harga', '$provinsi', '$kota', '$kecamatan', '$alamat', '$metode_pembayaran', '$ongkir', '$fee', '$total');");
 
@@ -66,9 +210,11 @@ function fill_product($pdo)
 
 ?>
 <html>
+
 <head>
-<meta http-equiv="refresh" content="60">
+    <meta http-equiv="refresh" content="60">
 </head>
+
 </html>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
@@ -104,11 +250,11 @@ function fill_product($pdo)
 
                         <div class="form-group">
                             <label for="reseller">Reseller</label><br>
-                            <input type="text" id="reseller" class="form-control reseller" value="<?=$_SESSION['fullname']?>" readonly>
+                            <input type="text" id="reseller" class="form-control reseller" value="<?= $_SESSION['fullname'] ?>" readonly>
                         </div>
                         <div class="form-group">
                             <label for="nama">Nama Pembeli</label><br>
-                            <input type="text" id="nama" class="form-control nama" required>
+                            <input type="text" id="nama" class="form-control nama" name="nama" required>
                         </div>
                         <div class="form-group">
                             <label for="produk">Produk</label>
